@@ -9,6 +9,7 @@ function Day(){
     return (
         <div>
             <h2>Day {day}</h2>
+            {words.length === 0 && <span>Loading...</span>}
             <table>        
                 {words.map(word => (
                     <Word word={word} key={word.id}/>
