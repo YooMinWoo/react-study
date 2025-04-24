@@ -1,34 +1,45 @@
-import { useRef, useState } from "react";
-import UseFetch from "../hooks/UseFetch";
+import React, { useRef, useState } from "react";
+import UseFetch from "../hooks/UseFetch.ts";
 import { useNavigate } from "react-router-dom";
+import { IDay } from "./DayList.tsx";
 
 function CreateWord(){
 
-    const days = UseFetch("http://localhost:3001/days");
+    // const days : IDay[] = UseFetch("http://localhost:3001/days");
+    const {data:days} = UseFetch<IDay[]>("http://localhost:3001/days");
     const history = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
-    function onSubmit(e){
+    const engRef = useRef<HTMLInputElement>(null)
+    const korRef = useRef<HTMLInputElement>(null)
+    const dayRef = useRef<HTMLSelectElement>(null)
+
+    function onSubmit(e : React.FormEvent){
         e.preventDefault();     // 새로고침 방지
 
-        if(!isLoading){
+        if(!isLoading && dayRef.current && engRef.current && korRef.current){
             setIsLoading(true);
+
+            const day = dayRef.current.value;
+            const eng = engRef.current.value;
+            const kor = korRef.current.value;
+
             fetch(`http://localhost:3001/words`, {
                 method : 'POST',
                 headers : {
                     'Content-Type' : 'application/json'
                 },
                 body : JSON.stringify({
-                    day : dayRef.current.value,
-                    eng : engRef.current.value,
-                    kor : korRef.current.value,
+                    day : day,
+                    eng : eng,
+                    kor : kor,
                     isDone : false
                 })
             })
             .then(res => {
                 if(res.ok){
                     alert("생성이 완료되었습니다.")
-                    history(`/day/${dayRef.current.value}`)
+                    history(`/day/${day}`)
                     setIsLoading(false);
                 }
             })
@@ -36,10 +47,6 @@ function CreateWord(){
 
         
     }
-
-    const engRef = useRef(null)
-    const korRef = useRef(null)
-    const dayRef = useRef(null)
 
     return (
         <form>

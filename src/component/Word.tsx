@@ -1,6 +1,18 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
-function Word({word : w}){
+interface IProps {
+    word: IWord
+}
+
+export interface IWord{
+    day: string,
+    eng: string,
+    kor: string,
+    isDone: boolean,
+    id: number,
+}
+
+function Word({word : w}: IProps){
     const [word, setWord] = useState(w);
     const [isShow, setIsShow] = useState(false);
     const [isDone, setIsDone] = useState(word.isDone);
@@ -20,14 +32,16 @@ function Word({word : w}){
             })
             .then(res => {
                 if(res.ok){
-                    setWord({id: 0})
+                    setWord({
+                        ...word,
+                        id: 0
+                    });
                 }
             })
         }
     }
 
     function toggleDone(){
-        // setIsDone(!isDone)
         fetch(`http://localhost:3001/words/${word.id}`, {
             method : 'PUT',
             headers : {
